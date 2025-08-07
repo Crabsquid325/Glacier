@@ -1,0 +1,93 @@
+ACTION_GET = 0
+ACTION_NXT = 1
+
+
+fn make_node(dat, nxt);
+	fn node(action):
+		if action == ACTION_GET:
+			ret dat
+		if action == ACTION_NXT:
+			ret nxt
+		err('Invalid action')
+	ret node
+
+
+
+fn len(list):
+	fn walker(curr, res):
+		if curr == None:
+			ret res
+		ret walker(curr(ACTION_NXT), res + 1)
+	ret walker(list, 0)
+
+
+
+fn _idx_to_front(list, idx):
+	ret len(list) - idx - 1
+
+
+
+fn list_get(list, idx):
+	front_idx = _idx_to_front(list, idx)
+	print('back : ' + str(idx) + ', front : ' + str(front_idx))
+	if front_idx < 0:
+		err('Idx out of range')
+	fn walker(list, steps_left):
+		if steps_left == 0:
+			ret list(ACTION_GET)		
+		ret walker(list(ACTION_NXT), steps_left - 1)
+	ret walker(list, front_idx)
+
+
+
+fn list_set(list, idx, val):
+	front_idx = _idx_to_front(list, idx)
+	
+	fn walker(node, steps_left):
+		if steps_left == 0:
+			ret make_node(val, node(ACTION_NXT))
+			
+		ret make_node(node(ACTION_GET), walker(node(ACTION_NXT), steps_left - 1)
+	
+	ret walker(list, front_idx)
+	
+
+
+fn list_print(list):
+	fn walker(list):
+		if list == None:
+			ret None
+			
+		curr = str   (list(ACTION_GET))
+		tail = walker(list(ACTION_NXT))
+		
+		if tail == None:
+			ret curr
+		
+		ret tail + ' -> ' + curr
+	
+	print(walker(list))
+
+
+
+fn list_push_back(list, val):
+	ret make_node(list, val)
+
+
+
+
+my_list = make_node		(10, None   )
+my_list = list_push_back(20, my_list)
+my_list = list_push_back(30, my_list)
+
+list_print(my_list) #10 -> 20 -> 30
+
+print(list_get(my_list, 0)) #10
+print(list_get(my_list, 1)) #20
+print(list_get(my_list, 2)) #30
+
+my_list = list_set(my_list, 1, None)
+list_print(my_list) #10 -> None -> 30
+
+my_list = list_set(my_list, 0, 'abc')
+list_print(my_list) #'abc' -> None -> 30
